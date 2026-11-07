@@ -2,58 +2,55 @@
 
 A local-first personal assistant project with a futuristic interface, being developed for Android and Windows.
 
-## Current features
+## Current project pieces
 
 - Responsive holographic dashboard and animated reactor
 - Text commands and local demo responses
-- Browser speech recognition where supported
-- Browser text-to-speech
-- Opt-in clap detection while the page is open
+- Browser speech recognition where supported and spoken replies
+- Opt-in browser clap detection while the page is open
 - Installable PWA shell with basic offline caching
+- Native Android WebView shell
+- Android opt-in foreground microphone service for clap detection
+- Automated Android debug APK build through GitHub Actions
 - No hosted AI API keys and no external AI calls in this prototype
 
-## Run in GitHub Codespaces
+## Run the web preview
 
 1. Open this repository in Codespaces.
-2. Open a terminal and run:
+2. Run:
    ```bash
    python3 -m http.server 8000
    ```
 3. Open forwarded port 8000 from the Codespaces Ports panel.
 
-Microphone access generally requires HTTPS or localhost. Speech recognition availability varies by browser and OS.
+Microphone access in the browser generally requires HTTPS or localhost.
 
-## Install on a phone
+## Android app
 
-After HTTPS deployment, open the site in a supported browser and choose **Install app** or **Add to Home screen**. This is an installable web interface, not yet a native Android app; it cannot listen after the browser/app is closed.
+Open the `android/` folder in Android Studio with JDK 17 and Android SDK 35. Build the `app` debug variant.
+
+The Android app bundles the dashboard and provides an optional clap listener. Tap **CLAP** and grant microphone permission. Android shows an ongoing notification while the microphone service is active; the notification includes a Stop action. A detected clap updates the notification, which you can tap to reopen JARVIS.
+
+Android restricts automatic activity launches from the background, so this implementation uses a notification rather than forcing the app onto the screen. Force-stop, permission revocation, and OS restrictions can stop the service.
+
+To get a debug APK from GitHub, open the repository's **Actions** tab, run **Build JARVIS Android APK** (or push an Android change), and download the `jarvis-debug-apk` artifact from a successful run.
 
 ## GitHub Pages
 
-The workflow in `.github/workflows/pages.yml` deploys the static app on pushes to `main`. In repository Settings → Pages, select **GitHub Actions** as the deployment source if needed. Check the Actions tab for deployment status.
+The workflow in `.github/workflows/pages.yml` deploys the web app when changes are pushed to `main`. In repository Settings → Pages, select **GitHub Actions** as the deployment source if needed.
 
-## Limitations
+## Not implemented yet
 
-- The web prototype cannot listen after the browser tab closes, after force-stop, or when the device is powered off.
-- Clap detection is experimental and may react to other sharp sounds.
-- Background microphone access requires separate native Android and Windows apps with OS permissions and visible controls.
-- Android may prevent opening an app window from the background; a notification can be shown instead.
-- A local AI model is not connected yet; current replies are simple local demo responses.
+- Local "Hey JARVIS" wake-word model
+- Local language model / conversational AI
+- Windows tray application
+- Persistent local memory
+- Permission-gated computer/device actions
 
-## Roadmap
-
-1. [x] Responsive dashboard
-2. [x] Browser voice input and speech output
-3. [x] Foreground clap detection
-4. [x] Installable PWA shell and offline cache
-5. [ ] Native Android foreground microphone service
-6. [ ] Windows desktop companion
-7. [ ] Local wake-word model
-8. [ ] Local language model
-9. [ ] Persistent local memory
-10. [ ] Permission-gated device actions
+The browser version cannot listen after its tab closes. The Android service currently detects claps only; it does not perform wake-word recognition. A clap is not authorization for sensitive actions.
 
 ## Privacy
 
-Microphone access is requested only after the user activates a voice or clap feature. The web prototype does not transmit microphone audio. Native background listening must remain visible, user-controlled, and easy to stop. Never store passwords or tokens in this repository.
+Microphone access is off by default and starts only after the user chooses CLAP and grants permission. Android displays a persistent notification with a stop control while the native listener runs. Audio is processed locally and is not uploaded by this project. Never store passwords, API tokens, or private data in this repository.
 
-See [Platform Roadmap](docs/PLATFORM-ROADMAP.md).
+See [Android notes](android/README.md) and [platform roadmap](docs/PLATFORM-ROADMAP.md).
