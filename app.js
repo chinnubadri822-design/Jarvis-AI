@@ -113,6 +113,28 @@ function disableClapDetection() {
   $("coreHint").textContent="Clap detection disabled"; toast("Clap detection disabled.");
 }
 $("clapButton").addEventListener("click", async () => {
+  if (window.JarvisNative && window.JarvisNative.isAndroidApp()) {
+    if (clapEnabled) {
+      window.JarvisNative.stopClapService();
+      clapEnabled = false;
+      $("clapButton").classList.remove("enabled");
+      $("clapButton").textContent = "CLAP";
+      $("coreHint").textContent = "Background clap listener stopped";
+      toast("JARVIS stopped listening.");
+    } else {
+      const started = window.JarvisNative.startClapService();
+      if (started) {
+        clapEnabled = true;
+        $("clapButton").classList.add("enabled");
+        $("clapButton").textContent = "CLAP ON";
+        $("coreHint").textContent = "Android foreground service is listening. Use its notification to stop.";
+        toast("Clap listener started. A persistent notification will remain visible.");
+      } else {
+        toast("Grant microphone permission, then tap CLAP again.");
+      }
+    }
+    return;
+  }
   if (clapEnabled) {
     disableClapDetection();
     $("clapButton").classList.remove("enabled");
