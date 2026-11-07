@@ -1,62 +1,59 @@
 # J.A.R.V.I.S — Personal AI Assistant
 
-A fresh, local-first personal assistant project with a futuristic Stark-inspired interface. The project is being built for Android and Windows, with a browser-based interface as the first milestone.
+A local-first personal assistant project with a futuristic interface, being developed for Android and Windows.
 
-## Current milestone: Interface prototype
+## Current features
 
-- Responsive dark holographic dashboard
-- Animated reactor-inspired visual core
-- Text command input and local demo responses
+- Responsive holographic dashboard and animated reactor
+- Text commands and local demo responses
 - Browser speech recognition where supported
 - Browser text-to-speech
 - Opt-in clap detection while the page is open
-- No cloud AI API keys and no external AI calls in this prototype
+- Installable PWA shell with basic offline caching
+- No hosted AI API keys and no external AI calls in this prototype
 
-## Run it
+## Run in GitHub Codespaces
 
-The current prototype is static HTML/CSS/JavaScript.
-
-1. Open the repository in GitHub Codespaces.
-2. Open a terminal.
-3. Run a local static server, for example:
-
+1. Open this repository in Codespaces.
+2. Open a terminal and run:
    ```bash
    python3 -m http.server 8000
    ```
+3. Open forwarded port 8000 from the Codespaces Ports panel.
 
-4. Open the forwarded port 8000 using the Codespaces Ports panel.
+Microphone access generally requires HTTPS or localhost. Speech recognition availability varies by browser and OS.
 
-Microphone access generally requires HTTPS or localhost. Browser speech recognition availability varies by browser and operating system.
+## Install on a phone
 
-## Important limitations
+After HTTPS deployment, open the site in a supported browser and choose **Install app** or **Add to Home screen**. This is an installable web interface, not yet a native Android app; it cannot listen after the browser/app is closed.
 
-This first milestone is a foreground web prototype. It cannot listen after the browser tab is closed, after the app is force-stopped, or when the device is powered off. Browser APIs do not provide reliable always-on wake-word detection.
+## GitHub Pages
 
-The planned native implementations are:
-- Android: a user-enabled foreground microphone service, visible persistent notification, and platform-compliant background behavior.
-- Windows: a user-enabled tray/background application with explicit microphone permission.
-- Local AI: an optional local model runtime, with no hosted API key. Model size and speed depend on device hardware.
+The workflow in `.github/workflows/pages.yml` deploys the static app on pushes to `main`. In repository Settings → Pages, select **GitHub Actions** as the deployment source if needed. Check the Actions tab for deployment status.
 
-Clap detection in this prototype is experimental, requires microphone permission, and can be triggered by other sharp sounds. It runs only while the page is open.
+## Limitations
+
+- The web prototype cannot listen after the browser tab closes, after force-stop, or when the device is powered off.
+- Clap detection is experimental and may react to other sharp sounds.
+- Background microphone access requires separate native Android and Windows apps with OS permissions and visible controls.
+- Android may prevent opening an app window from the background; a notification can be shown instead.
+- A local AI model is not connected yet; current replies are simple local demo responses.
 
 ## Roadmap
 
-1. [x] Create responsive JARVIS dashboard
-2. [x] Add browser voice input and spoken responses
-3. [x] Add opt-in foreground clap detection
-4. [ ] Add native Android application and foreground service
-5. [ ] Add Windows desktop companion
-6. [ ] Integrate a local language model
-7. [ ] Add local preferences and persistent conversation memory
-8. [ ] Add permission-gated device actions
+1. [x] Responsive dashboard
+2. [x] Browser voice input and speech output
+3. [x] Foreground clap detection
+4. [x] Installable PWA shell and offline cache
+5. [ ] Native Android foreground microphone service
+6. [ ] Windows desktop companion
+7. [ ] Local wake-word model
+8. [ ] Local language model
+9. [ ] Persistent local memory
+10. [ ] Permission-gated device actions
 
-## Privacy and safety
+## Privacy
 
-- Microphone access is requested only after the user activates a voice or clap feature.
-- The prototype does not transmit microphone audio to a server.
-- Device actions must require clear user permission and confirmation.
-- Do not store passwords, authentication tokens, or other secrets in this repository.
+Microphone access is requested only after the user activates a voice or clap feature. The web prototype does not transmit microphone audio. Native background listening must remain visible, user-controlled, and easy to stop. Never store passwords or tokens in this repository.
 
-## License
-
-Personal learning project. Add a license if you decide to publish or distribute it.
+See [Platform Roadmap](docs/PLATFORM-ROADMAP.md).
