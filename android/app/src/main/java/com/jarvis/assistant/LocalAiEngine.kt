@@ -79,7 +79,7 @@ class LocalAiEngine(
             onState("Thinking on this device…")
             try {
                 val response = chat.sendMessage(clean)
-                onReply(response.text.ifBlank { "I couldn't create a response. Please try again." })
+                onReply(response.toString().ifBlank { "I couldn't create a response. Please try again." })
                 onState("LOCAL AI ONLINE")
             } catch (error: Exception) {
                 onError("Local model error: ${error.message ?: "please try again"}.")
