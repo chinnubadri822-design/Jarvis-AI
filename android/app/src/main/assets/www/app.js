@@ -61,6 +61,7 @@ function localReply(text) {
 function submitCommand(text) {
   const command = (text || input.value).trim(); if (!command) return;
   addMessage(command,"user"); input.value = "";
+  if (window.JarvisNative && window.JarvisNative.isAndroidApp() && window.JarvisNative.isLocalAiLoaded() && window.JarvisNative.askLocalAI(command)) return;
   const reply = localReply(command);
   setTimeout(() => { addMessage(reply); speak(reply); }, 280);
 }
@@ -69,6 +70,10 @@ input.addEventListener("keydown", e => { if(e.key === "Enter") submitCommand(); 
 document.querySelectorAll("[data-prompt]").forEach(button => button.addEventListener("click", () => submitCommand(button.dataset.prompt)));
 $("clearButton").addEventListener("click", () => { conversation.innerHTML = ""; addMessage("Conversation cleared. Ready for a new command."); });
 $("settingsButton").addEventListener("click", () => toast("Settings panel will be added in the next build."));
+$("modelButton").addEventListener("click", () => {
+  if (!window.JarvisNative || !window.JarvisNative.isAndroidApp()) { toast("Load a local model from the Android app."); return; }
+  window.JarvisNative.chooseLocalModel();
+});
 
 function startVoice() {
   if (window.JarvisNative && window.JarvisNative.isAndroidApp()) {
@@ -91,6 +96,22 @@ function startVoice() {
   try { recognition.start(); } catch(error) { setState(false); toast("Could not start microphone. Check browser permission."); }
 }
 $("micButton").addEventListener("click", startVoice);
+// Native callbacks from the on-device language model.
+window.jarvisLocalAiState = (message) => {
+  $("aiMetric").textContent = message === "LOCAL AI ONLINE" ? "ONLINE" : "LOADING";
+  $("coreHint").textContent = message;
+};
+window.jarvisLocalAiReply = (message) => {
+  addMessage(message);
+  speak(message);
+  $("aiMetric").textContent = "ONLINE";
+  $("coreHint").textContent = "Local model response complete";
+};
+window.jarvisLocalAiError = (message) => {
+  $("aiMetric").textContent = "NOT READY";
+  toast(message);
+};
+
 // Callbacks from the native Android speech recognizer.
 window.jarvisNativeVoiceState = (message) => { setState(true, "LISTENING"); $("coreHint").textContent = message; };
 window.jarvisNativeVoiceResult = (phrase) => { setState(false); submitCommand(phrase); };
