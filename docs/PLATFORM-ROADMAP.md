@@ -2,27 +2,17 @@
 
 ## Current milestone
 
-The repository contains a responsive browser interface. It supports text commands, browser speech input when available, speech synthesis, and opt-in clap detection while the page is open. The PWA shell can be installed and cached for offline access.
+The repository contains a responsive browser interface with text commands, browser speech input when available, speech synthesis, and opt-in clap detection while the page is open. The PWA shell can be installed and cached for offline access.
 
-## Android native companion — first scaffold committed
+## Android native companion
 
-A native Android WebView shell and user-started microphone foreground service are now included. The current native service detects clap-like audio transients and updates its persistent notification. A web page alone cannot keep listening after its browser is closed.
+The native Android WebView shell supports tap-to-speak through the installed Android speech-recognition service, an opt-in clap listener, and an opt-in local “Hey JARVIS” wake-word listener.
 
-The Android implementation must:
-- Request microphone permission only after the user enables the feature.
-- Run capture only in a user-started foreground service with a persistent notification.
-- Declare the microphone foreground-service type and permission for modern Android versions.
-- Provide an obvious stop control in the app and notification.
-- Process audio locally; do not upload microphone audio.
-- Stop capture when disabled, permission is revoked, or the OS stops the service.
-- Respect Android background-start restrictions. Do not promise automatic microphone startup after force-stop or at boot.
-- Use a notification tap to reopen the interface when background activity launch is restricted. (Implemented.)
+The wake-word path uses the openWakeWord Android ONNX pipeline and its bundled “Hey JARVIS” model. Inference runs on the device without a hosted API key. A user-started microphone foreground service displays an ongoing notification with a Stop action. When the phrase is detected, the notification changes; tapping it opens JARVIS and starts the follow-up voice session.
 
-Implemented in this scaffold: opt-in service start/stop, runtime microphone permission request, ongoing notification, local clap transient detection, and notification tap to reopen the dashboard.
+Android may block automatic activity launches from the background. The notification-tap flow is intentional. Force-stop, permission revocation, battery limits, and OS policies can stop listening. The speech-to-text service used after wake detection is provided by Android; its offline preference is best-effort and device-dependent.
 
-Clap detection can be local, but is not a reliable identity or authorization signal and must never approve sensitive device actions.
-
-"Hey JARVIS" needs a compatible on-device wake-word model/runtime. Model licensing and download size must be reviewed. No hosted API key is required, but a local model is still needed.
+The bundled wake-word model is CC BY-NC-SA 4.0. Review the root README's Third-party notices before redistributing or considering commercial use.
 
 ## Windows companion
 
