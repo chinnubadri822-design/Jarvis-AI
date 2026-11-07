@@ -25,6 +25,7 @@ class LocalAiEngine(
     private var engine: Engine? = null
     private var conversation: Conversation? = null
     private var modelFile: File? = null
+    @Volatile private var loaded = false
 
     fun load(file: File) {
         executor.execute {
@@ -35,6 +36,7 @@ class LocalAiEngine(
             }
             onState("Loading local model… this can take a while.")
             var candidate: Engine? = null
+            var initialized = false
             try {
                 candidate = Engine(
                     EngineConfig(
@@ -43,6 +45,7 @@ class LocalAiEngine(
                     )
                 )
                 candidate.initialize()
+                initialized = true
                 val chat = candidate.createConversation(
                     ConversationConfig(
                         systemInstruction = Contents.of(
@@ -55,9 +58,10 @@ class LocalAiEngine(
                 engine = candidate
                 conversation = chat
                 modelFile = file
+                loaded = true
                 onState("LOCAL AI ONLINE")
             } catch (error: Exception) {
-                try { candidate?.close() } catch (_: Exception) {}
+                if (initialized) { try { candidate?.close() } catch (_: Exception) {} }
                 onError("Could not load this model: ${error.message ?: "unsupported model or device"}.")
             }
         }
@@ -84,7 +88,7 @@ class LocalAiEngine(
         }
     }
 
-    fun isLoaded(): Boolean = conversation != null
+    fun isLoaded(): Boolean = loaded
 
     private fun closeModel() {
         try { conversation?.close() } catch (_: Exception) {}
@@ -92,6 +96,7 @@ class LocalAiEngine(
         try { engine?.close() } catch (_: Exception) {}
         engine = null
         modelFile = null
+        loaded = false
     }
 
     fun close() {
