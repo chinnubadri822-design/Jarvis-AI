@@ -9,6 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/jarvis.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -52,10 +54,11 @@
         <div class="command-box">
           <span class="prompt-symbol">›</span>
           <input id="commandInput" type="text" autocomplete="off" placeholder="Ask JARVIS anything..." aria-label="Ask JARVIS" />
+          <button class="clap-button" id="clapButton" title="Enable clap detection while JARVIS is open" aria-label="Toggle clap detection">CLAP</button>
           <button class="mic-button" id="micButton" title="Start voice input" aria-label="Start voice input"><span>🎙</span></button>
           <button class="send-button" id="sendButton">SEND <span>↗</span></button>
         </div>
-        <p class="privacy-note"><span class="lock">▣</span> Voice input is requested only when you activate it. This preview does not listen in the background.</p>
+        <p class="privacy-note"><span class="lock">▣</span> Microphone activates only after you choose Voice or Clap. Background wake is not available in this web preview.</p>
       </section>
 
       <section class="content-grid">
