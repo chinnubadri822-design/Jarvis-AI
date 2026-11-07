@@ -27,5 +27,5 @@ android {
 
 dependencies {
     implementation("com.github.msnilsen:openwakeword-android:0.1.0")
-    implementation("com.google.ai.edge.litertlm:litertlm-android:0.16.1")
+    implementation("com.google.ai.edge.litertlm:litertlm-android:0.18.0")
 }
