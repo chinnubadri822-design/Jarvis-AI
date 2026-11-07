@@ -84,7 +84,7 @@ function startVoice() {
   recognition.onend = () => { if(listening) setState(false); };
   try { recognition.start(); } catch(error) { setState(false); toast("Could not start microphone. Check browser permission."); }
 }
-$("micButton").addEventListener("click", startVoice);
+$("micButton").addEventListener("click", startVoice);\n// Callbacks from the native Android speech recognizer.\nwindow.jarvisNativeVoiceState = (message) => { setState(true, "LISTENING"); $("coreHint").textContent = message; };\nwindow.jarvisNativeVoiceResult = (phrase) => { setState(false); submitCommand(phrase); };\nwindow.jarvisNativeVoiceError = (message) => { setState(false); toast(message); };\n
 
 // Clap detection is opt-in and runs only while this page is open.
 async function enableClapDetection() {
