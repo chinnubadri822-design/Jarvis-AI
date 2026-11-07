@@ -18,18 +18,44 @@ import org.json.JSONObject
 class MainActivity : Activity() {
     private lateinit var webView: WebView
     private var speechRecognizer: SpeechRecognizer? = null
+    private var pageReady = false
+    private var pendingWake = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        pendingWake = intent?.getBooleanExtra(HeyJarvisWakeService.EXTRA_WAKE_DETECTED, false) == true
         webView = WebView(this)
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.webChromeClient = WebChromeClient()
-        webView.webViewClient = WebViewClient()
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageFinished(view: WebView?, url: String?) {
+                pageReady = true
+                if (pendingWake) deliverWakeToPage()
+            }
+        }
         webView.addJavascriptInterface(JarvisBridge(), "JarvisNative")
         setContentView(webView)
         webView.loadUrl("file:///android_asset/www/index.html")
         requestNotificationPermissionIfNeeded()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent?.getBooleanExtra(HeyJarvisWakeService.EXTRA_WAKE_DETECTED, false) == true) {
+            pendingWake = true
+            if (pageReady) deliverWakeToPage()
+        }
+    }
+
+    private fun deliverWakeToPage() {
+        pendingWake = false
+        stopService(Intent(this, HeyJarvisWakeService::class.java))
+        webView.evaluateJavascript(
+            "window.jarvisWakeDetected && window.jarvisWakeDetected()",
+            null
+        )
     }
 
     private fun requestNotificationPermissionIfNeeded() {
@@ -99,6 +125,9 @@ class MainActivity : Activity() {
         speechRecognizer = null
     }
 
+    private fun hasMicPermission(): Boolean =
+        checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+
     inner class JarvisBridge {
         @JavascriptInterface
         fun isAndroidApp(): Boolean = true
@@ -113,10 +142,11 @@ class MainActivity : Activity() {
 
         @JavascriptInterface
         fun startClapService(): Boolean {
-            if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            if (!hasMicPermission()) {
                 runOnUiThread { requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 41) }
                 return false
             }
+            stopService(Intent(this@MainActivity, HeyJarvisWakeService::class.java))
             val intent = Intent(this@MainActivity, ClapWakeService::class.java)
                 .setAction(ClapWakeService.ACTION_START)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(intent) else startService(intent)
@@ -126,6 +156,24 @@ class MainActivity : Activity() {
         @JavascriptInterface
         fun stopClapService() {
             stopService(Intent(this@MainActivity, ClapWakeService::class.java))
+        }
+
+        @JavascriptInterface
+        fun startHeyJarvisService(): Boolean {
+            if (!hasMicPermission()) {
+                runOnUiThread { requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 41) }
+                return false
+            }
+            stopService(Intent(this@MainActivity, ClapWakeService::class.java))
+            val intent = Intent(this@MainActivity, HeyJarvisWakeService::class.java)
+                .setAction(HeyJarvisWakeService.ACTION_START)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(intent) else startService(intent)
+            return true
+        }
+
+        @JavascriptInterface
+        fun stopHeyJarvisService() {
+            stopService(Intent(this@MainActivity, HeyJarvisWakeService::class.java))
         }
     }
 
