@@ -54,11 +54,12 @@
         <div class="command-box">
           <span class="prompt-symbol">›</span>
           <input id="commandInput" type="text" autocomplete="off" placeholder="Ask JARVIS anything..." aria-label="Ask JARVIS" />
-          <button class="clap-button" id="clapButton" title="Enable clap detection while JARVIS is open" aria-label="Toggle clap detection">CLAP</button>
+          <button class="clap-button" id="clapButton" title="Enable clap detection" aria-label="Toggle clap detection">CLAP</button>
+          <button class="clap-button" id="wakeButton" title="Enable offline Hey JARVIS wake-word detection on Android" aria-label="Toggle Hey JARVIS wake word">HEY JARVIS</button>
           <button class="mic-button" id="micButton" title="Start voice input" aria-label="Start voice input"><span>🎙</span></button>
           <button class="send-button" id="sendButton">SEND <span>↗</span></button>
         </div>
-        <p class="privacy-note"><span class="lock">▣</span> Microphone activates only after you choose Voice or Clap. Background wake is not available in this web preview.</p>
+        <p class="privacy-note"><span class="lock">▣</span> Microphone is opt-in. On Android, HEY JARVIS runs offline with a persistent notification and Stop control. Background wake is not available in the web preview.</p>
       </section>
 
       <section class="content-grid">
