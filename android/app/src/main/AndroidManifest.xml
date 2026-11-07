@@ -19,6 +19,7 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTop"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,6 +28,10 @@
         </activity>
         <service
             android:name=".ClapWakeService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+        <service
+            android:name=".HeyJarvisWakeService"
             android:exported="false"
             android:foregroundServiceType="microphone" />
     </application>
