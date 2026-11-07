@@ -6,7 +6,7 @@ A local-first personal assistant project with a futuristic interface, being deve
 
 - Responsive holographic dashboard and animated reactor
 - Text commands and local demo responses
-- Browser speech recognition where supported and spoken replies
+- Native Android speech-recognition button with spoken replies (uses the installed Android recognition service)\n- Browser speech recognition where supported
 - Opt-in browser clap detection while the page is open
 - Installable PWA shell with basic offline caching
 - Native Android WebView shell
