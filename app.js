@@ -8,6 +8,7 @@ let listening = false;
 let audioContext = null;
 let clapStream = null;
 let clapEnabled = false;
+let wakeEnabled = false;
 let clapCooldown = 0;
 
 function updateClock() {
@@ -70,6 +71,11 @@ $("clearButton").addEventListener("click", () => { conversation.innerHTML = ""; 
 $("settingsButton").addEventListener("click", () => toast("Settings panel will be added in the next build."));
 
 function startVoice() {
+  if (window.JarvisNative && window.JarvisNative.isAndroidApp()) {
+    if (window.JarvisNative.startVoiceRecognition()) return;
+    toast("Allow microphone access, then tap the microphone again.");
+    return;
+  }
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) { toast("Speech recognition is not supported in this browser. Try a current Chrome browser."); return; }
   if (recognition && listening) { recognition.stop(); setState(false); return; }
@@ -84,7 +90,20 @@ function startVoice() {
   recognition.onend = () => { if(listening) setState(false); };
   try { recognition.start(); } catch(error) { setState(false); toast("Could not start microphone. Check browser permission."); }
 }
-$("micButton").addEventListener("click", startVoice);\n// Callbacks from the native Android speech recognizer.\nwindow.jarvisNativeVoiceState = (message) => { setState(true, "LISTENING"); $("coreHint").textContent = message; };\nwindow.jarvisNativeVoiceResult = (phrase) => { setState(false); submitCommand(phrase); };\nwindow.jarvisNativeVoiceError = (message) => { setState(false); toast(message); };\n
+$("micButton").addEventListener("click", startVoice);
+// Callbacks from the native Android speech recognizer.
+window.jarvisNativeVoiceState = (message) => { setState(true, "LISTENING"); $("coreHint").textContent = message; };
+window.jarvisNativeVoiceResult = (phrase) => { setState(false); submitCommand(phrase); };
+window.jarvisNativeVoiceError = (message) => { setState(false); toast(message); };
+window.jarvisWakeDetected = () => {
+  wakeEnabled = false;
+  $("wakeButton").classList.remove("enabled");
+  $("wakeButton").textContent = "HEY JARVIS";
+  $("coreHint").textContent = "Wake phrase detected. Speak your command.";
+  toast("JARVIS is ready. Listening for your command.");
+  setTimeout(() => startVoice(), 650);
+};
+
 
 // Clap detection is opt-in and runs only while this page is open.
 async function enableClapDetection() {
@@ -112,6 +131,36 @@ function disableClapDetection() {
   if(audioContext) audioContext.close(); clapStream=null; audioContext=null;
   $("coreHint").textContent="Clap detection disabled"; toast("Clap detection disabled.");
 }
+$("wakeButton").addEventListener("click", () => {
+  if (!window.JarvisNative || !window.JarvisNative.isAndroidApp()) {
+    toast("Offline background wake-word is available in the Android app.");
+    return;
+  }
+  if (wakeEnabled) {
+    window.JarvisNative.stopHeyJarvisService();
+    wakeEnabled = false;
+    $("wakeButton").classList.remove("enabled");
+    $("wakeButton").textContent = "HEY JARVIS";
+    $("coreHint").textContent = "Hey JARVIS listener stopped";
+    toast("Wake-word listener stopped.");
+    return;
+  }
+  if (clapEnabled) {
+    window.JarvisNative.stopClapService();
+    clapEnabled = false;
+    $("clapButton").classList.remove("enabled");
+    $("clapButton").textContent = "CLAP";
+  }
+  if (window.JarvisNative.startHeyJarvisService()) {
+    wakeEnabled = true;
+    $("wakeButton").classList.add("enabled");
+    $("wakeButton").textContent = "WAKE ON";
+    $("coreHint").textContent = "Say “Hey JARVIS”. The microphone notification stays visible.";
+    toast("Offline Hey JARVIS listener started.");
+  } else {
+    toast("Grant microphone permission, then tap HEY JARVIS again.");
+  }
+});
 $("clapButton").addEventListener("click", async () => {
   if (window.JarvisNative && window.JarvisNative.isAndroidApp()) {
     if (clapEnabled) {
@@ -122,6 +171,12 @@ $("clapButton").addEventListener("click", async () => {
       $("coreHint").textContent = "Background clap listener stopped";
       toast("JARVIS stopped listening.");
     } else {
+      if (wakeEnabled) {
+        window.JarvisNative.stopHeyJarvisService();
+        wakeEnabled = false;
+        $("wakeButton").classList.remove("enabled");
+        $("wakeButton").textContent = "HEY JARVIS";
+      }
       const started = window.JarvisNative.startClapService();
       if (started) {
         clapEnabled = true;
