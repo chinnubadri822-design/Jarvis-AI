@@ -54,6 +54,7 @@
         <div class="command-box">
           <span class="prompt-symbol">›</span>
           <input id="commandInput" type="text" autocomplete="off" placeholder="Ask JARVIS anything..." aria-label="Ask JARVIS" />
+          <button class="clap-button" id="modelButton" title="Import a local .litertlm language model" aria-label="Load local AI model">LOAD MODEL</button>
           <button class="clap-button" id="clapButton" title="Enable clap detection" aria-label="Toggle clap detection">CLAP</button>
           <button class="clap-button" id="wakeButton" title="Enable offline Hey JARVIS wake-word detection on Android" aria-label="Toggle Hey JARVIS wake word">HEY JARVIS</button>
           <button class="mic-button" id="micButton" title="Start voice input" aria-label="Start voice input"><span>🎙</span></button>
@@ -75,7 +76,7 @@
             <div class="panel-heading compact"><div><p class="eyebrow">LIVE DIAGNOSTICS</p><h2>System status</h2></div><span class="live-tag">LIVE</span></div>
             <div class="metric-list">
               <div class="metric"><span class="metric-icon">◉</span><span>Voice interface</span><b id="voiceMetric">READY</b></div>
-              <div class="metric"><span class="metric-icon">⌘</span><span>AI engine</span><b class="muted-value">NOT CONNECTED</b></div>
+              <div class="metric"><span class="metric-icon">⌘</span><span>AI engine</span><b id="aiMetric" class="muted-value">MODEL REQUIRED</b></div>
               <div class="metric"><span class="metric-icon">▤</span><span>Local memory</span><b id="memoryMetric">SESSION</b></div>
               <div class="metric"><span class="metric-icon">◇</span><span>Wake listener</span><b class="muted-value">FOREGROUND</b></div>
             </div>
