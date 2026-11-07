@@ -5,7 +5,8 @@ A local-first personal assistant project with a futuristic interface, being deve
 ## Current project pieces
 
 - Responsive holographic dashboard and animated reactor
-- Text commands and local demo responses
+- Text commands with optional on-device LiteRT-LM language model
+- Android local model import from a user-selected `.litertlm` file
 - Android tap-to-speak input through the installed speech-recognition service (offline preference is best-effort and not guaranteed)
 - Browser speech recognition where supported
 - Android opt-in, on-device **“Hey JARVIS”** wake-word detection using ONNX
@@ -14,7 +15,8 @@ A local-first personal assistant project with a futuristic interface, being deve
 - Opt-in clap listener
 - Installable PWA shell with basic offline caching
 - Automated Android debug APK build through GitHub Actions
-- No hosted AI API key and no external AI calls for wake-word detection
+- No hosted AI API key; local model inference runs on-device after a model file is imported
+- No model file is bundled in the APK
 
 ## Run the web preview
 
@@ -43,9 +45,18 @@ To get a debug APK from GitHub, open the repository's **Actions** tab and downlo
 
 To publish the web app, open repository Settings → Pages and select **GitHub Actions** as the deployment source. Then open Actions → **Deploy JARVIS to GitHub Pages** → Run workflow.
 
+## Enable the local AI brain (Android)
+
+1. Download the compatible [Qwen3-0.6B LiteRT-LM model](https://huggingface.co/litert-community/Qwen3-0.6B/resolve/main/Qwen3-0.6B.litertlm) (about 614 MB). The model is Apache-2.0 licensed.
+2. Open JARVIS and tap **LOAD MODEL**.
+3. Select the downloaded `Qwen3-0.6B.litertlm` file. JARVIS copies it into its private app storage and initializes it on a background thread.
+4. When the AI status says **ONLINE**, send a text or voice command. The language-model responses are generated locally without a hosted API key.
+
+The first model load can take time. The model needs substantial free storage and memory; performance depends on the phone. The APK does not contain the model, so downloading it is a separate one-time step. This integration uses LiteRT-LM 0.18.0 and the model's supported format. See the [official Android guide](https://developers.google.com/edge/litert-lm/android) and [model card](https://huggingface.co/litert-community/Qwen3-0.6B).
+
 ## Not implemented yet
 
-- Local conversational language model
+- Windows desktop/tray application
 - Windows tray application
 - Persistent local memory
 - Permission-gated computer/device actions
