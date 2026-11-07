@@ -37,7 +37,7 @@ To get a debug APK from GitHub, open the repository's **Actions** tab, run **Bui
 
 ## GitHub Pages
 
-The workflow in `.github/workflows/pages.yml` deploys the web app when changes are pushed to `main`. In repository Settings → Pages, select **GitHub Actions** as the deployment source if needed.
+To publish the web app, open repository Settings → Pages and select **GitHub Actions** as the deployment source. Then open Actions → **Deploy JARVIS to GitHub Pages** → Run workflow.
 
 ## Not implemented yet
 
