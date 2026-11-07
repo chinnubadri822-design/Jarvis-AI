@@ -37,3 +37,8 @@ The clap and wake-word listeners share microphone access, so the app stops one b
 - Microphone capture is opt-in and is shown by Android's foreground-service notification.
 - Wake-word inference is local; the wake-word audio is not uploaded by this project.
 - Do not treat a wake phrase or clap as authorization for sensitive device actions.
+
+
+## On-device conversational AI
+
+This version includes the LiteRT-LM Android runtime. Download the compatible Qwen3-0.6B `.litertlm` model separately (about 614 MB) from https://huggingface.co/litert-community/Qwen3-0.6B/resolve/main/Qwen3-0.6B.litertlm. In JARVIS, tap **LOAD MODEL** and select the file. The app copies it into private storage and loads it off the UI thread. Once the dashboard reports **ONLINE**, chat and voice input use the local model. Model inference stays on-device; the speech-recognition provider may still have its own network behavior. The model is not bundled in the APK.
