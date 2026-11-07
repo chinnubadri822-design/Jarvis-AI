@@ -1,19 +1,39 @@
 # JARVIS Android companion
 
-This is the first native Android shell. It hosts the dashboard in a WebView, supports one-shot voice input through Android's installed speech-recognition service, and provides an opt-in microphone foreground service for clap detection.
+The Android shell hosts the dashboard in a WebView, supports tap-to-speak through Android's installed speech-recognition service, and includes two user-controlled microphone foreground services.
 
 ## Build
 
-Open the repository in Android Studio and open the `android/` folder. Use JDK 17 and Android SDK 35, then build the `app` debug variant.
+Open the repository's `android/` folder in Android Studio. Use JDK 17 and Android SDK 35, then build the `app` debug variant. The build downloads the wake-word runtime dependency from JitPack.
 
-## Microphone behavior
+## Offline “Hey JARVIS” wake word
+
+1. Open JARVIS and tap **HEY JARVIS**.
+2. Grant microphone permission if Android asks.
+3. Keep the ongoing **JARVIS is listening** notification visible.
+4. Say **“Hey JARVIS”**.
+5. When the notification says the wake phrase was detected, tap it. JARVIS opens and starts the follow-up voice-command session.
+6. To stop background listening, use **Stop listening** in the notification or tap **WAKE ON** in the app.
+
+Wake-word detection uses the bundled openWakeWord ONNX pipeline locally. No hosted API key or cloud wake-word call is used. The pretrained model is licensed CC BY-NC-SA 4.0 (non-commercial, share-alike); see the root README's Third-party notices before redistributing or using this model commercially.
+
+The follow-up speech-to-text is provided by the Android device's installed recognition service. JARVIS requests its offline mode, but some devices may still require network access for speech recognition.
+
+## Clap listener
 
 - Clap detection is off by default.
-- The user must tap the CLAP control and grant microphone permission.
+- The user must tap **CLAP** and grant microphone permission.
 - Android displays an ongoing notification while microphone capture is active.
 - The notification includes a Stop listening action.
-- A clap updates the notification; tapping it opens JARVIS.
-- Android may block an app from opening its screen automatically while in the background. This implementation intentionally uses a notification instead of trying to bypass that restriction.
-- Force-stop, permission revocation, battery restrictions, and OS policies can stop the service.
+- A detected clap updates the notification; tapping it opens JARVIS.
+- Clap detection can mistake other sharp sounds for a clap.
 
-Voice input is started only when the user taps the microphone button. Android's installed recognition service may require network access; the offline preference is requested but is not guaranteed by every device. Local always-on "Hey JARVIS" wake-word detection and the local AI model are later milestones.
+The clap and wake-word listeners share microphone access, so the app stops one before starting the other.
+
+## Android limitations and privacy
+
+- Android may block an app from opening its screen automatically while in the background. JARVIS uses a notification tap instead.
+- Force-stop, permission revocation, battery restrictions, and OS policies can stop the service.
+- Microphone capture is opt-in and is shown by Android's foreground-service notification.
+- Wake-word inference is local; the wake-word audio is not uploaded by this project.
+- Do not treat a wake phrase or clap as authorization for sensitive device actions.
