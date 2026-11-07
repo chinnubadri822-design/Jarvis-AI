@@ -4,9 +4,9 @@
 
 The repository contains a responsive browser interface. It supports text commands, browser speech input when available, speech synthesis, and opt-in clap detection while the page is open. The PWA shell can be installed and cached for offline access.
 
-## Android native companion
+## Android native companion — first scaffold committed
 
-A native Android app is required for background microphone features. A web page cannot keep listening after its browser is closed.
+A native Android WebView shell and user-started microphone foreground service are now included. The current native service detects clap-like audio transients and updates its persistent notification. A web page alone cannot keep listening after its browser is closed.
 
 The Android implementation must:
 - Request microphone permission only after the user enables the feature.
@@ -16,7 +16,9 @@ The Android implementation must:
 - Process audio locally; do not upload microphone audio.
 - Stop capture when disabled, permission is revoked, or the OS stops the service.
 - Respect Android background-start restrictions. Do not promise automatic microphone startup after force-stop or at boot.
-- Use a notification tap to reopen the interface when background activity launch is restricted.
+- Use a notification tap to reopen the interface when background activity launch is restricted. (Implemented.)
+
+Implemented in this scaffold: opt-in service start/stop, runtime microphone permission request, ongoing notification, local clap transient detection, and notification tap to reopen the dashboard.
 
 Clap detection can be local, but is not a reliable identity or authorization signal and must never approve sensitive device actions.
 
