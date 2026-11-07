@@ -103,7 +103,15 @@ class MainActivity : Activity() {
                     sendToPage("window.jarvisNativeVoiceState", "Processing speech…")
                 }
                 override fun onError(error: Int) {
-                    sendToPage("window.jarvisNativeVoiceError", "Voice input ended (code $error). Please try again.")
+                    val message = when (error) {
+                        SpeechRecognizer.ERROR_NO_MATCH -> "I didn't catch that. Speak clearly after the listening indicator appears, then try again."
+                        SpeechRecognizer.ERROR_SPEECH_TIMEOUT -> "I didn't hear anything. Tap the microphone and speak right away."
+                        SpeechRecognizer.ERROR_AUDIO -> "The microphone audio failed. Close other apps using the microphone and try again."
+                        SpeechRecognizer.ERROR_RECOGNIZER_BUSY -> "Speech recognition is busy. Wait a moment and try again."
+                        SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS -> "Microphone permission is required. Allow it in Android app settings."
+                        else -> "Speech recognition stopped (code $error). Please try again."
+                    }
+                    sendToPage("window.jarvisNativeVoiceError", message)
                     stopNativeVoice()
                 }
                 override fun onResults(results: Bundle?) {
@@ -120,7 +128,8 @@ class MainActivity : Activity() {
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                 putExtra(RecognizerIntent.EXTRA_LANGUAGE, java.util.Locale.getDefault().toLanguageTag())
                 putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
-                putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
+                // Allow Android's installed recognition provider when an offline language pack is unavailable.
+                putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, false)
             }
             speechRecognizer?.startListening(intent)
         }
