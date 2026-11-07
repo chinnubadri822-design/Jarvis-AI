@@ -6,6 +6,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.net.Uri
+import android.provider.OpenableColumns
+import java.io.File
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
@@ -20,10 +23,17 @@ class MainActivity : Activity() {
     private var speechRecognizer: SpeechRecognizer? = null
     private var pageReady = false
     private var pendingWake = false
+    private lateinit var localAi: LocalAiEngine
+    private val modelPickerRequest = 73
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pendingWake = intent?.getBooleanExtra(HeyJarvisWakeService.EXTRA_WAKE_DETECTED, false) == true
+        localAi = LocalAiEngine(this,
+            onState = { sendToPage("window.jarvisLocalAiState", it) },
+            onReply = { sendToPage("window.jarvisLocalAiReply", it) },
+            onError = { sendToPage("window.jarvisLocalAiError", it) }
+        )
         webView = WebView(this)
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
@@ -128,9 +138,56 @@ class MainActivity : Activity() {
     private fun hasMicPermission(): Boolean =
         checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
 
+    private fun chooseLocalModel() {
+        val picker = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "*/*"
+        }
+        startActivityForResult(picker, modelPickerRequest)
+    }
+
+    @Deprecated("Deprecated in Android but retained for broad device compatibility")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode != modelPickerRequest || resultCode != RESULT_OK) return
+        val uri: Uri = data?.data ?: return
+        try {
+            val displayName = contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
+                ?.use { cursor -> if (cursor.moveToFirst()) cursor.getString(0) else null }
+                .orEmpty()
+            if (!displayName.endsWith(".litertlm", ignoreCase = true)) {
+                sendToPage("window.jarvisLocalAiError", "Choose a .litertlm model file.")
+                return
+            }
+            sendToPage("window.jarvisLocalAiState", "Copying model into private app storage…")
+            val destination = File(filesDir, "jarvis-model.litertlm")
+            contentResolver.openInputStream(uri)?.use { input ->
+                destination.outputStream().use { output -> input.copyTo(output) }
+            } ?: throw IllegalStateException("Could not read the selected file.")
+            localAi.load(destination)
+        } catch (error: Exception) {
+            sendToPage("window.jarvisLocalAiError", "Could not import model: " + (error.message ?: "unknown error"))
+        }
+    }
+
     inner class JarvisBridge {
         @JavascriptInterface
         fun isAndroidApp(): Boolean = true
+
+        @JavascriptInterface
+        fun chooseLocalModel() {
+            runOnUiThread { this@MainActivity.chooseLocalModel() }
+        }
+
+        @JavascriptInterface
+        fun isLocalAiLoaded(): Boolean = localAi.isLoaded()
+
+        @JavascriptInterface
+        fun askLocalAI(prompt: String): Boolean {
+            if (!localAi.isLoaded()) return false
+            localAi.ask(prompt)
+            return true
+        }
 
         @JavascriptInterface
         fun startVoiceRecognition(): Boolean = startNativeVoice()
@@ -178,6 +235,7 @@ class MainActivity : Activity() {
     }
 
     override fun onDestroy() {
+        localAi.close()
         stopNativeVoice()
         webView.removeJavascriptInterface("JarvisNative")
         webView.destroy()
