@@ -1,6 +1,6 @@
 # JARVIS Android companion
 
-This is the first native Android shell. It hosts the existing dashboard in a WebView and provides an opt-in microphone foreground service for clap detection.
+This is the first native Android shell. It hosts the dashboard in a WebView, supports one-shot voice input through Android's installed speech-recognition service, and provides an opt-in microphone foreground service for clap detection.
 
 ## Build
 
@@ -16,4 +16,4 @@ Open the repository in Android Studio and open the `android/` folder. Use JDK 17
 - Android may block an app from opening its screen automatically while in the background. This implementation intentionally uses a notification instead of trying to bypass that restriction.
 - Force-stop, permission revocation, battery restrictions, and OS policies can stop the service.
 
-This is clap detection only. Local "Hey JARVIS" wake-word detection and the local AI model are later milestones.
+Voice input is started only when the user taps the microphone button. Android's installed recognition service may require network access; the offline preference is requested but is not guaranteed by every device. Local always-on "Hey JARVIS" wake-word detection and the local AI model are later milestones.
