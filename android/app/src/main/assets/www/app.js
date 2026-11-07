@@ -51,7 +51,7 @@ function localReply(text) {
   if (/hello|hi jarvis|hey jarvis/.test(q)) return "Hello. JARVIS interface is online and ready to assist.";
   if (/time/.test(q)) return "The current local time is " + new Date().toLocaleTimeString() + ".";
   if (/date|today/.test(q)) return "Today is " + new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"}) + ".";
-  if (/capabilit|what can you do|help/.test(q)) return "This first build includes the command interface, browser voice input, spoken replies, and session conversation log. The local AI engine and native background wake service are planned next.";
+  if (/capabilit|what can you do|help/.test(q)) return "This build includes the command interface, voice input, spoken replies, and session conversation log. On Android, you can enable offline Hey JARVIS wake-word detection from the dashboard. The local conversational AI engine is still a future milestone.";
   if (/briefing|system/.test(q)) return "JARVIS user interface is operational. Voice features depend on browser support and microphone permission. Local AI engine is not connected yet.";
   if (/plan|task/.test(q)) return "Let's break that into small steps. Tell me the goal, deadline, and what you have already completed.";
   if (/code|developer/.test(q)) return "Developer module selected. Tell me the language, the feature you want, and any error message.";
