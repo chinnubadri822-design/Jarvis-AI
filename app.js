@@ -112,7 +112,23 @@ function disableClapDetection() {
   if(audioContext) audioContext.close(); clapStream=null; audioContext=null;
   $("coreHint").textContent="Clap detection disabled"; toast("Clap detection disabled.");
 }
-$("settingsButton").addEventListener("dblclick", enableClapDetection);
-$("settingsButton").title = "Double-tap to toggle clap detection (microphone permission required)";
+$("clapButton").addEventListener("click", async () => {
+  if (clapEnabled) {
+    disableClapDetection();
+    $("clapButton").classList.remove("enabled");
+    $("clapButton").textContent = "CLAP";
+  } else {
+    await enableClapDetection();
+    if (clapEnabled) {
+      $("clapButton").classList.add("enabled");
+      $("clapButton").textContent = "CLAP ON";
+    }
+  }
+});
+
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+}
+
 
 if (!window.isSecureContext) toast("For microphone access, open this site over HTTPS (GitHub Pages or Codespaces preview).");
