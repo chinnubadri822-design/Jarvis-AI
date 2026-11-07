@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050914" />
+  <meta name="description" content="JARVIS — a personal, local-first voice assistant interface." />
+  <title>J.A.R.V.I.S — Personal AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/jarvis.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="JARVIS home"><span class="brand-mark">J</span><span><strong>J.A.R.V.I.S</strong><small>PERSONAL INTELLIGENCE SYSTEM</small></span></a>
+      <div class="top-status"><span class="status-dot"></span><span id="systemStatus">SYSTEM STANDBY</span><i></i><span id="clock">--:--:--</span></div>
+      <button class="icon-button" id="settingsButton" aria-label="Settings" title="Settings">⚙</button>
+    </header>
+
+    <main>
+      <section class="hero-grid">
+        <div class="intro-panel">
+          <p class="eyebrow"><span class="tiny-line"></span> STARK-INSPIRED PERSONAL ASSISTANT</p>
+          <h1>Good day.<br><em>How can I help?</em></h1>
+          <p class="intro-copy">Your personal command interface. Speak naturally, explore ideas, and keep your tools close.</p>
+          <div class="quick-actions">
+            <button class="quick-action" data-prompt="Give me a quick system briefing"><span>⌁</span> System briefing</button>
+            <button class="quick-action" data-prompt="Tell me what you can do"><span>✳</span> Capabilities</button>
+            <button class="quick-action" data-prompt="Start a new task"><span>＋</span> New task</button>
+          </div>
+        </div>
+
+        <div class="core-panel">
+          <div class="core-label"><span class="status-dot"></span> NEURAL CORE <b>LOCAL MODE</b></div>
+          <div class="reactor-wrap" id="reactor">
+            <div class="reactor-orbit orbit-a"></div><div class="reactor-orbit orbit-b"></div>
+            <div class="reactor-ring ring-a"></div><div class="reactor-ring ring-b"></div>
+            <div class="reactor-ring ring-c"></div>
+            <div class="reactor-core"><div class="core-inner"><span>J</span></div></div>
+            <div class="reactor-cross cross-x"></div><div class="reactor-cross cross-y"></div>
+          </div>
+          <div class="listening-state" id="listeningState">AWAITING INPUT</div>
+          <p class="core-hint" id="coreHint">Tap the microphone to start a session</p>
+          <div class="waveform" id="waveform" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+      </section>
+
+      <section class="command-row">
+        <div class="command-box">
+          <span class="prompt-symbol">›</span>
+          <input id="commandInput" type="text" autocomplete="off" placeholder="Ask JARVIS anything..." aria-label="Ask JARVIS" />
+          <button class="clap-button" id="clapButton" title="Enable clap detection while JARVIS is open" aria-label="Toggle clap detection">CLAP</button>
+          <button class="mic-button" id="micButton" title="Start voice input" aria-label="Start voice input"><span>🎙</span></button>
+          <button class="send-button" id="sendButton">SEND <span>↗</span></button>
+        </div>
+        <p class="privacy-note"><span class="lock">▣</span> Microphone activates only after you choose Voice or Clap. Background wake is not available in this web preview.</p>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel conversation-panel">
+          <div class="panel-heading"><div><p class="eyebrow">INTERACTION LOG</p><h2>Conversation</h2></div><button class="text-button" id="clearButton">CLEAR LOG ↗</button></div>
+          <div class="conversation" id="conversation" aria-live="polite">
+            <div class="message jarvis-message"><div class="avatar">J</div><div><span class="message-author">JARVIS <small>JUST NOW</small></span><p>Systems initialized. I am ready for your command.</p></div></div>
+          </div>
+        </div>
+
+        <aside class="side-column">
+          <div class="panel status-panel">
+            <div class="panel-heading compact"><div><p class="eyebrow">LIVE DIAGNOSTICS</p><h2>System status</h2></div><span class="live-tag">LIVE</span></div>
+            <div class="metric-list">
+              <div class="metric"><span class="metric-icon">◉</span><span>Voice interface</span><b id="voiceMetric">READY</b></div>
+              <div class="metric"><span class="metric-icon">⌘</span><span>AI engine</span><b class="muted-value">NOT CONNECTED</b></div>
+              <div class="metric"><span class="metric-icon">▤</span><span>Local memory</span><b id="memoryMetric">SESSION</b></div>
+              <div class="metric"><span class="metric-icon">◇</span><span>Wake listener</span><b class="muted-value">FOREGROUND</b></div>
+            </div>
+          </div>
+          <div class="panel modules-panel">
+            <div class="panel-heading compact"><div><p class="eyebrow">YOUR TOOLKIT</p><h2>Modules</h2></div><span class="module-count">04</span></div>
+            <div class="module-grid">
+              <button class="module" data-prompt="Help me plan my day"><span>◷</span><b>Planner</b><small>Organize tasks</small></button>
+              <button class="module" data-prompt="Help me write some code"><span>⌘</span><b>Developer</b><small>Code assistant</small></button>
+              <button class="module" data-prompt="Explain a topic to me"><span>✧</span><b>Knowledge</b><small>Learn anything</small></button>
+              <button class="module" data-prompt="Help me brainstorm an idea"><span>⟡</span><b>Creative</b><small>Make something</small></button>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+    <footer><span>J.A.R.V.I.S <b>•</b> PERSONAL PROJECT</span><span>LOCAL-FIRST DESIGN <b>•</b> NO API KEYS IN THIS UI</span><span id="footerDate"></span></footer>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
